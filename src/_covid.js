@@ -6,8 +6,7 @@ import * as history from 'history';
 import * as topojson from 'topojson-client';
 import './style.css';
 
-const isTouchDevice =
-  'ontouchstart' in document.documentElement;
+const isTouchDevice = 'ontouchstart' in document.documentElement;
 if (isTouchDevice) {
   $(document.body).addClass('touch');
 }
@@ -61,17 +60,18 @@ const dataPointLabels = {
   newNegative: 'New Negative',
   pop: 'Est. Population',
 };
-Object.keys(dataPointLabels).forEach(k => {
+Object.keys(dataPointLabels).forEach((k) => {
   dataPointLabels[per100kKey(k)] = dataPointLabels[k];
 });
 
 // On the map, "daily new" fields are averages
 const mapDataPointLabels = { ...dataPointLabels };
-Object.keys(mapDataPointLabels).forEach(key => {
+Object.keys(mapDataPointLabels).forEach((key) => {
   if (key.indexOf('new') === 0) {
-    mapDataPointLabels[key] = `Avg ${mapDataPointLabels[
-      key
-    ].replace('New', 'Daily')}`;
+    mapDataPointLabels[key] = `Avg ${mapDataPointLabels[key].replace(
+      'New',
+      'Daily'
+    )}`;
   }
 });
 

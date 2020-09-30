@@ -4,13 +4,13 @@ function coerceNumber(value) {
 
 function processStates(csv, popMap) {
   const nestedStates = d3nest()
-    .key(k => k.state)
+    .key((k) => k.state)
     .entries(csv);
 
   const processed = processGroups(nestedStates, popMap, true);
 
   stateData = [];
-  processed.forEach(group => {
+  processed.forEach((group) => {
     if (group.key === 'US') {
       group.key = 'United States';
       usData = [group];
@@ -25,18 +25,10 @@ function processStates(csv, popMap) {
 
 function fetchMapData() {
   if (!fetchMapData.promise) {
-    fetchMapData.promise = d3json(
-      'assets/us-counties.topojson'
-    ).then(us => {
-      stateFeatures = topojson.feature(us, us.objects.states)
-        .features;
-      stateBorders = topojson.mesh(
-        us,
-        us.objects.states,
-        (a, b) => a !== b
-      );
-      countyFeatures = topojson.feature(us, us.objects.counties)
-        .features;
+    fetchMapData.promise = d3json('assets/us-counties.topojson').then((us) => {
+      stateFeatures = topojson.feature(us, us.objects.states).features;
+      stateBorders = topojson.mesh(us, us.objects.states, (a, b) => a !== b);
+      countyFeatures = topojson.feature(us, us.objects.counties).features;
     });
   }
   return fetchMapData.promise;
@@ -45,14 +37,14 @@ function fetchMapData() {
 function processCounties(csv, popMap) {
   // First nest counties by state
   const nestedStates = d3nest()
-    .key(k => k.state)
+    .key((k) => k.state)
     .entries(csv);
 
   const stateMap = {};
 
-  nestedStates.forEach(state => {
+  nestedStates.forEach((state) => {
     const counties = d3nest()
-      .key(k => k.county)
+      .key((k) => k.county)
       .entries(state.values);
     const byCounty = processGroups(counties, popMap, false);
     stateMap[state.key] = {
@@ -79,7 +71,7 @@ function fetchAndRenderStates() {
       renderAllStates();
       completeLoading();
     })
-    .catch(error => {
+    .catch((error) => {
       console.error(error);
       completeLoading();
     });
@@ -92,7 +84,7 @@ function fetchAndRenderCounties(state) {
       renderCounties(state);
       completeLoading();
     })
-    .catch(error => {
+    .catch((error) => {
       console.error(error);
       completeLoading();
     });
@@ -100,7 +92,7 @@ function fetchAndRenderCounties(state) {
 
 function processPopulations(pop) {
   const map = Object.assign({}, populationOverrides);
-  pop.forEach(p => {
+  pop.forEach((p) => {
     const fips = fipsRemapping[p.fips] || p.fips;
     if (populationOverrides[fips]) {
       map[fips] = populationOverrides[fips];
@@ -114,14 +106,14 @@ function processPopulations(pop) {
 function processCounties(csv, popMap) {
   // First nest counties by state
   const nestedStates = d3nest()
-    .key(k => k.state)
+    .key((k) => k.state)
     .entries(csv);
 
   const stateMap = {};
 
-  nestedStates.forEach(state => {
+  nestedStates.forEach((state) => {
     const counties = d3nest()
-      .key(k => k.county)
+      .key((k) => k.county)
       .entries(state.values);
     const byCounty = processGroups(counties, popMap, false);
     stateMap[state.key] = {
@@ -134,12 +126,7 @@ function processCounties(csv, popMap) {
 }
 
 function getValueKeys(withTesting) {
-  const valueKeys = [
-    'cases',
-    'deaths',
-    'newCases',
-    'newDeaths',
-  ];
+  const valueKeys = ['cases', 'deaths', 'newCases', 'newDeaths'];
   if (withTesting) {
     valueKeys.push(
       'positive',
@@ -157,7 +144,7 @@ function getValueKeys(withTesting) {
 function processGroups(groups, popMap, hasTesting) {
   const valueKeys = getValueKeys(hasTesting);
 
-  groups.forEach(group => {
+  groups.forEach((group) => {
     const newRows = [];
     for (let i = 0; i < group.values.length; i++) {
       const row = group.values[i];
@@ -171,16 +158,12 @@ function processGroups(groups, popMap, hasTesting) {
       const parsed = {
         ...row,
         fips,
-        date: new Date(
-          Number(year),
-          Number(month) - 1,
-          Number(date)
-        ),
+        date: new Date(Number(year), Number(month) - 1, Number(date)),
         cases: Number(row.cases),
         deaths: Number(row.deaths),
         newCases: Number(row.newCases),
       };
-      valueKeys.forEach(key => {
+      valueKeys.forEach((key) => {
         parsed[key] = coerceNumber(parsed[key]);
       });
 
@@ -191,7 +174,7 @@ function processGroups(groups, popMap, hasTesting) {
       if (pop) {
         parsed.pop = pop;
         const p100kFactor = pop / 1e5;
-        valueKeys.forEach(key => {
+        valueKeys.forEach((key) => {
           if (typeof parsed[key] === 'number') {
             parsed[per100kKey(key)] = parsed[key] / p100kFactor;
           }
@@ -216,7 +199,7 @@ function processGroups(groups, popMap, hasTesting) {
 const fetchStatePopulationsMemo = memoizeOne(() => {
   return new Promise((resolve, reject) => {
     d3csv('assets/fips-pop-sta.csv')
-      .then(popCsv => {
+      .then((popCsv) => {
         const popMap = processPopulations(popCsv);
         resolve(popMap);
       })
@@ -226,7 +209,7 @@ const fetchStatePopulationsMemo = memoizeOne(() => {
 
 function processPopulations(pop) {
   const map = Object.assign({}, populationOverrides);
-  pop.forEach(p => {
+  pop.forEach((p) => {
     const fips = fipsRemapping[p.fips] || p.fips;
     if (populationOverrides[fips]) {
       map[fips] = populationOverrides[fips];
@@ -240,7 +223,7 @@ function processPopulations(pop) {
 const fetchCountyPopulationsMemo = memoizeOne(() => {
   return new Promise((resolve, reject) => {
     d3csv('assets/fips-pop-cty.csv')
-      .then(popCsv => {
+      .then((popCsv) => {
         const popMap = processPopulations(popCsv);
         resolve(popMap);
       })
@@ -257,7 +240,7 @@ function populateStateSelect(stateData) {
   const stateOptions = stateData
     .slice(0)
     .sort((a, b) => a.key.localeCompare(b.key))
-    .map(s => `<option value="${s.key}">${s.key}</option>`)
+    .map((s) => `<option value="${s.key}">${s.key}</option>`)
     .join('');
   $('#state-select').html(
     `<option value="all" selected>All States</option>${stateOptions}`
@@ -267,7 +250,7 @@ function populateStateSelect(stateData) {
   }
 }
 
-const fetchStateDataMemo = memoizeOne(timeFilter => {
+const fetchStateDataMemo = memoizeOne((timeFilter) => {
   return new Promise((resolve, reject) => {
     const file = timeFilter === 'all' ? 'all' : '90d';
     Promise.all([
@@ -293,9 +276,7 @@ const fetchCountyDataMemo = memoizeOne((state, timeFilter) => {
         const timeDir = timeFilter === 'all' ? 'all' : '90d';
         const fips = stateToFipsMap[state];
         if (!fips) {
-          reject(
-            new Error(`Could not find fips for state ${state}`)
-          );
+          reject(new Error(`Could not find fips for state ${state}`));
           return;
         }
 

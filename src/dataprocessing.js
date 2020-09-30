@@ -25,10 +25,7 @@ import {
   scaleLog as d3scaleLog,
   scaleLinear as d3scaleLinear,
 } from 'd3-scale';
-import {
-  geoAlbersUsa as d3geoAlbersUsa,
-  geoPath as d3geoPath,
-} from 'd3-geo';
+import { geoAlbersUsa as d3geoAlbersUsa, geoPath as d3geoPath } from 'd3-geo';
 import scaleCluster from 'd3-scale-cluster';
 import 'd3-transition';
 
@@ -42,12 +39,7 @@ import sortedIndexBy from 'lodash/sortedIndexBy';
 /////////////////////
 
 function getValueKeys(withTesting) {
-  const valueKeys = [
-    'cases',
-    'deaths',
-    'newCases',
-    'newDeaths',
-  ];
+  const valueKeys = ['cases', 'deaths', 'newCases', 'newDeaths'];
   if (withTesting) {
     valueKeys.push(
       'positive',
@@ -64,13 +56,13 @@ function getValueKeys(withTesting) {
 
 function processStates(csv, popMap) {
   const nestedStates = d3nest()
-    .key(k => k.state)
+    .key((k) => k.state)
     .entries(csv);
 
   const processed = processGroups(nestedStates, popMap, true);
 
   stateData = [];
-  processed.forEach(group => {
+  processed.forEach((group) => {
     if (group.key === 'US') {
       group.key = 'United States';
       usData = [group];
@@ -90,14 +82,14 @@ function coerceNumber(value) {
 function processCounties(csv, popMap) {
   // First nest counties by state
   const nestedStates = d3nest()
-    .key(k => k.state)
+    .key((k) => k.state)
     .entries(csv);
 
   const stateMap = {};
 
-  nestedStates.forEach(state => {
+  nestedStates.forEach((state) => {
     const counties = d3nest()
-      .key(k => k.county)
+      .key((k) => k.county)
       .entries(state.values);
     const byCounty = processGroups(counties, popMap, false);
     stateMap[state.key] = {
@@ -111,7 +103,7 @@ function processCounties(csv, popMap) {
 
 function processPopulations(pop) {
   const map = Object.assign({}, populationOverrides);
-  pop.forEach(p => {
+  pop.forEach((p) => {
     const fips = fipsRemapping[p.fips] || p.fips;
     if (populationOverrides[fips]) {
       map[fips] = populationOverrides[fips];
@@ -125,7 +117,7 @@ function processPopulations(pop) {
 function processGroups(groups, popMap, hasTesting) {
   const valueKeys = getValueKeys(hasTesting);
 
-  groups.forEach(group => {
+  groups.forEach((group) => {
     const newRows = [];
     for (let i = 0; i < group.values.length; i++) {
       const row = group.values[i];
@@ -139,16 +131,12 @@ function processGroups(groups, popMap, hasTesting) {
       const parsed = {
         ...row,
         fips,
-        date: new Date(
-          Number(year),
-          Number(month) - 1,
-          Number(date)
-        ),
+        date: new Date(Number(year), Number(month) - 1, Number(date)),
         cases: Number(row.cases),
         deaths: Number(row.deaths),
         newCases: Number(row.newCases),
       };
-      valueKeys.forEach(key => {
+      valueKeys.forEach((key) => {
         parsed[key] = coerceNumber(parsed[key]);
       });
 
@@ -159,7 +147,7 @@ function processGroups(groups, popMap, hasTesting) {
       if (pop) {
         parsed.pop = pop;
         const p100kFactor = pop / 1e5;
-        valueKeys.forEach(key => {
+        valueKeys.forEach((key) => {
           if (typeof parsed[key] === 'number') {
             parsed[per100kKey(key)] = parsed[key] / p100kFactor;
           }
@@ -183,9 +171,7 @@ function processGroups(groups, popMap, hasTesting) {
 
 function filterData(groups, datesToShow, hasTestingData) {
   const valueKeys = getValueKeys(hasTestingData);
-  const allValueKeys = valueKeys.concat(
-    valueKeys.map(per100kKey)
-  );
+  const allValueKeys = valueKeys.concat(valueKeys.map(per100kKey));
 
   // Keys for which to compute moving averages
   let maKeys = ['newCases', 'newDeaths'];
@@ -193,14 +179,14 @@ function filterData(groups, datesToShow, hasTestingData) {
 
   const extents = {};
   const extentKeys = ['date'].concat(allValueKeys);
-  extentKeys.forEach(key => (extents[key] = [null, null]));
+  extentKeys.forEach((key) => (extents[key] = [null, null]));
 
   const maStartDate = new Date(datesToShow[0]);
   maStartDate.setDate(maStartDate.getDate() - MA_NUM_DAYS);
 
-  const dateAccessor = v => v.date.getTime();
+  const dateAccessor = (v) => v.date.getTime();
 
-  const newGroups = groups.map(g => {
+  const newGroups = groups.map((g) => {
     const { values } = g;
     const newRows = [];
 
@@ -219,35 +205,30 @@ function filterData(groups, datesToShow, hasTestingData) {
 
     // Data structure to store our N-day moving average window for each field
     let maWindows = {};
-    maKeys.forEach(key => {
+    maKeys.forEach((key) => {
       maWindows[key] = [];
     });
 
     while (curDate.getTime() <= endDate.getTime()) {
       // Is this date within our visualized range?
-      let isWithinRange =
-        curDate.getTime() >= startDate.getTime();
+      let isWithinRange = curDate.getTime() >= startDate.getTime();
 
       // Peek at the next value in our values array – is there a value for the current date?
       let nextValue = values[valuesIndex];
       let matchingValue =
-        nextValue &&
-        nextValue.date.getTime() === curDate.getTime()
+        nextValue && nextValue.date.getTime() === curDate.getTime()
           ? nextValue
           : null;
 
       // First update moving averages
       let maValues = {};
-      maKeys.forEach(key => {
+      maKeys.forEach((key) => {
         const arr = maWindows[key];
         if (arr.length === MA_NUM_DAYS) {
           arr.shift();
         }
         // If there is data for the current date/field combo, use that.
-        if (
-          matchingValue &&
-          typeof matchingValue[key] === 'number'
-        ) {
+        if (matchingValue && typeof matchingValue[key] === 'number') {
           arr.push(nextValue[key]);
         } else {
           arr.push(0);
@@ -259,9 +240,7 @@ function filterData(groups, datesToShow, hasTestingData) {
       // For dates that will be visualized, push a value into the newRows array
       if (isWithinRange) {
         if (matchingValue) {
-          newRows.push(
-            Object.assign({}, matchingValue, maValues)
-          );
+          newRows.push(Object.assign({}, matchingValue, maValues));
         } else {
           // If there was no matching value for today, all we have is a moving average,
           // just generate a fake data point with the average values
@@ -290,20 +269,14 @@ function filterData(groups, datesToShow, hasTestingData) {
     }
 
     // Update the extents object
-    newRows.forEach(row => {
-      extentKeys.forEach(key => {
+    newRows.forEach((row) => {
+      extentKeys.forEach((key) => {
         const extent = extents[key];
         const value = row[key];
-        if (
-          value != undefined &&
-          (extent[0] === null || value < extent[0])
-        ) {
+        if (value != undefined && (extent[0] === null || value < extent[0])) {
           extent[0] = value;
         }
-        if (
-          value != undefined &&
-          (extent[1] === null || value > extent[1])
-        ) {
+        if (value != undefined && (extent[1] === null || value > extent[1])) {
           extent[1] = value;
         }
         // Account for moving averages in the extent
@@ -348,9 +321,7 @@ function render(data) {
   lastData = data;
   const { groups, overview, isCounties, stateFips } = data;
 
-  const field = filters.per100k
-    ? per100kKey(filters.field)
-    : filters.field;
+  const field = filters.per100k ? per100kKey(filters.field) : filters.field;
 
   let daysToShow;
   if (filters.time === '7d') {
@@ -380,16 +351,8 @@ function render(data) {
     $('.testing-data-unavailable').hide();
   }
 
-  const overviewData = filterOverviewData(
-    overview,
-    datesToShow,
-    true
-  );
-  const gridData = filterGridData(
-    groups,
-    datesToShow,
-    !isCounties
-  );
+  const overviewData = filterOverviewData(overview, datesToShow, true);
+  const gridData = filterGridData(groups, datesToShow, !isCounties);
 
   const options = {
     field,
@@ -417,7 +380,7 @@ function aggMapData(groups, features) {
   const hasTests = groups[0].values[0].tests != undefined;
   const fields = getValueKeys(hasTests);
 
-  groups.forEach(group => {
+  groups.forEach((group) => {
     const { values } = group;
     if (!values.length) {
       return;
@@ -430,30 +393,30 @@ function aggMapData(groups, features) {
       pop,
       label: group.key,
       // New cases/deaths over last N days
-      cases: d3sum(values, v => v.newCases),
-      deaths: d3sum(values, v => v.newDeaths),
+      cases: d3sum(values, (v) => v.newCases),
+      deaths: d3sum(values, (v) => v.newDeaths),
       // Average of new daily cases/deahts over last N days
-      newCases: d3mean(values, v => v.newCases),
-      newDeaths: d3mean(values, v => v.newDeaths),
+      newCases: d3mean(values, (v) => v.newCases),
+      newDeaths: d3mean(values, (v) => v.newDeaths),
     };
 
     if (hasTests) {
-      value.tests = d3sum(values, v => v.newTests);
-      value.positive = d3sum(values, v => v.newPositive);
+      value.tests = d3sum(values, (v) => v.newTests);
+      value.positive = d3sum(values, (v) => v.newPositive);
       value.positivePct = value.positive / value.tests;
-      value.negative = d3sum(values, v => v.newNegative);
+      value.negative = d3sum(values, (v) => v.newNegative);
       value.negativePct = value.negative / value.tests;
-      value.pending = d3sum(values, v => v.newPending);
+      value.pending = d3sum(values, (v) => v.newPending);
       value.pendingPct = value.pending / value.tests;
-      value.newTests = d3mean(values, v => v.newTests);
-      value.newPositive = d3mean(values, v => v.newPositive);
+      value.newTests = d3mean(values, (v) => v.newTests);
+      value.newPositive = d3mean(values, (v) => v.newPositive);
       value.newPositivePct = value.newPositive / value.newTests;
-      value.newNegative = d3mean(values, v => v.newNegative);
+      value.newNegative = d3mean(values, (v) => v.newNegative);
       value.newNegativePct = value.newNegative / value.newTests;
     }
 
     const p100kFactor = pop / 1e5;
-    fields.forEach(field => {
+    fields.forEach((field) => {
       if (typeof value[field] === 'number') {
         value[per100kKey(field)] = value[field] / p100kFactor;
       }
@@ -462,7 +425,7 @@ function aggMapData(groups, features) {
     byFips[Number(fips)] = value;
   });
 
-  return features.map(f => {
+  return features.map((f) => {
     const fips = fipsRemapping[f.id] || f.id;
     const data = byFips[fips];
     return {
@@ -504,9 +467,7 @@ function renderMap(data, options) {
 
   const fieldTitle = mapDataPointLabels[field];
   const timeTitle = timeLabels[filters.time];
-  d3select('#map-title').text(
-    `Map of ${fieldTitle}, ${timeTitle}`
-  );
+  d3select('#map-title').text(`Map of ${fieldTitle}, ${timeTitle}`);
 
   const $g = $map
     .select('#map-g')
@@ -516,25 +477,19 @@ function renderMap(data, options) {
   let countyFeaturesFiltered = [];
   if (isCounties) {
     const _stateFips = String(Number(stateFips));
-    countyFeaturesFiltered = countyFeatures.filter(f => {
+    countyFeaturesFiltered = countyFeatures.filter((f) => {
       const fips = String(f.id);
-      return (
-        _stateFips ===
-        fips.substring(0, fips.length === 4 ? 1 : 2)
-      );
+      return _stateFips === fips.substring(0, fips.length === 4 ? 1 : 2);
     });
   }
 
   let stateFeaturesFiltered = isCounties
-    ? stateFeatures.filter(f => f.id === Number(stateFips))
+    ? stateFeatures.filter((f) => f.id === Number(stateFips))
     : stateFeatures;
 
   const hasMapData = Boolean(stateFeaturesFiltered.length);
   d3select('#map-no-data').classed('shown', !hasMapData);
-  d3select('#viz-map-header').style(
-    'opacity',
-    hasMapData ? 1 : 0
-  );
+  d3select('#viz-map-header').style('opacity', hasMapData ? 1 : 0);
 
   const joinedData = aggMapData(
     groups,
@@ -542,7 +497,7 @@ function renderMap(data, options) {
   );
 
   const domain = [];
-  joinedData.forEach(d => {
+  joinedData.forEach((d) => {
     const value = d[field];
     if (typeof value === 'number' && value > 0) {
       domain.push(value);
@@ -552,9 +507,7 @@ function renderMap(data, options) {
     domain.push(1);
   }
   const min = d3min(domain);
-  const colorScale = scaleCluster()
-    .domain(domain)
-    .range(mapColors);
+  const colorScale = scaleCluster().domain(domain).range(mapColors);
   const clusters = colorScale.clusters();
   renderMapLegend(clusters, min);
 
@@ -568,28 +521,21 @@ function renderMap(data, options) {
   const $states = $g
     .select('#map-states')
     .selectAll('.map-state')
-    .data(
-      isCounties ? stateFeaturesFiltered : joinedData,
-      d => d.id
-    )
+    .data(isCounties ? stateFeaturesFiltered : joinedData, (d) => d.id)
     .join(
-      enter =>
+      (enter) =>
         enter
           .append('path')
           .attr('opacity', 0)
           .attr('class', 'map-state map-feat'),
-      update => update,
-      exit => {
-        exit
-          .transition()
-          .duration(350)
-          .attr('opacity', 0)
-          .remove();
+      (update) => update,
+      (exit) => {
+        exit.transition().duration(350).attr('opacity', 0).remove();
       }
     );
 
   $states
-    .attr('d', d => path(d.feature))
+    .attr('d', (d) => path(d.feature))
     .transition()
     .duration(isFirstMapRender ? 0 : 350)
     .attr('opacity', 1)
@@ -598,26 +544,19 @@ function renderMap(data, options) {
   const $counties = $g
     .select('#map-counties')
     .selectAll('.map-county')
-    .data(isCounties ? joinedData : [], d => d.id)
+    .data(isCounties ? joinedData : [], (d) => d.id)
     .join(
-      enter =>
+      (enter) =>
         enter
           .append('path')
           .attr('opacity', 0)
-          .attr(
-            'class',
-            d => `map-county map-county-${d.id} map-feat`
-          ),
-      update => update,
-      exit => {
-        exit
-          .transition()
-          .duration(350)
-          .attr('opacity', 0)
-          .remove();
+          .attr('class', (d) => `map-county map-county-${d.id} map-feat`),
+      (update) => update,
+      (exit) => {
+        exit.transition().duration(350).attr('opacity', 0).remove();
       }
     )
-    .attr('d', d => path(d.feature))
+    .attr('d', (d) => path(d.feature))
     .attr('fill', fillColor);
 
   $counties
@@ -654,7 +593,7 @@ function renderMap(data, options) {
 
   if (isTouchDevice) {
     $features
-      .on('click', d => {
+      .on('click', (d) => {
         // Dont let this bubble up to document click
         d3event.stopPropagation();
         onMouseEnter(d);
@@ -664,7 +603,7 @@ function renderMap(data, options) {
       });
   } else {
     $features
-      .on('click', d => {
+      .on('click', (d) => {
         if (allowDrilldown) {
           setStateFilter(d.label);
         } else {
@@ -678,27 +617,19 @@ function renderMap(data, options) {
   }
 
   // Zoom to the correct location (anaimated on subsequent renders)
-  const $gSel = isFirstMapRender
-    ? $g
-    : $g.transition().duration(750);
+  const $gSel = isFirstMapRender ? $g : $g.transition().duration(750);
   if (isCounties && stateFeaturesFiltered.length) {
-    const bounds = isCounties
-      ? path.bounds(stateFeaturesFiltered[0])
-      : null;
+    const bounds = isCounties ? path.bounds(stateFeaturesFiltered[0]) : null;
     const xWidth = bounds[1][0] - bounds[0][0];
     const yHeight = bounds[1][1] - bounds[0][1];
     const xCenter = (bounds[0][0] + bounds[1][0]) / 2;
     const yCenter = (bounds[0][1] + bounds[1][1]) / 2;
-    const scale =
-      0.9 / Math.max(xWidth / mapWidth, yHeight / mapHeight);
+    const scale = 0.9 / Math.max(xWidth / mapWidth, yHeight / mapHeight);
     const translate = [
       mapWidth / 2 - scale * xCenter,
       mapHeight / 2 - scale * yCenter,
     ];
-    $gSel.attr(
-      'transform',
-      'translate(' + translate + ')scale(' + scale + ')'
-    );
+    $gSel.attr('transform', 'translate(' + translate + ')scale(' + scale + ')');
   } else {
     $gSel.attr('transform', 'translate(0)scale(1)');
   }
@@ -712,17 +643,13 @@ function renderMapLegend(clusters, min) {
     .selectAll('.map-legend-item')
     .data([0, min].concat(clusters))
     .join(
-      enter => {
-        const $item = enter
-          .append('div')
-          .attr('class', 'map-legend-item');
-        $item
-          .append('div')
-          .classed('map-legend-item-label', true);
+      (enter) => {
+        const $item = enter.append('div').attr('class', 'map-legend-item');
+        $item.append('div').classed('map-legend-item-label', true);
         return $item;
       },
-      update => update,
-      exit => exit.remove()
+      (update) => update,
+      (exit) => exit.remove()
     )
     .each(function (d, i) {
       $(this).css(
@@ -731,15 +658,12 @@ function renderMapLegend(clusters, min) {
       );
     })
     .select('.map-legend-item-label')
-    .text(d => formatMapLegendTick(d));
+    .text((d) => formatMapLegendTick(d));
 }
 
 function renderOverview(data, options) {
   const $overview = d3select('#svg-overview');
-  const {
-    width,
-    height,
-  } = $overview.node().getBoundingClientRect();
+  const { width, height } = $overview.node().getBoundingClientRect();
 
   const $cell = $overview.select('g.cell');
   $cell.selectAll('*').remove();
@@ -785,8 +709,7 @@ function renderGrid(data, options) {
     window.innerWidth / (estChartWidth + chartXPadding)
   );
   const chartWidth = Math.floor(
-    (window.innerWidth - chartXPadding * (numCols + 1)) /
-      numCols
+    (window.innerWidth - chartXPadding * (numCols + 1)) / numCols
   );
 
   const cellLabelX = -20;
@@ -807,16 +730,13 @@ function renderGrid(data, options) {
 
   const allowDrilldown = !options.isCounties;
 
-  groups.forEach(g => {
+  groups.forEach((g) => {
     if (field.indexOf('new') === 0) {
       // For daily new cases / deaths, sort by the sum of the data currently being shown
-      g.sortVal = d3sum(g.values, v => v[field]);
+      g.sortVal = d3sum(g.values, (v) => v[field]);
     } else {
       // Otherwise sort by the last shown cumulative value
-      const lastVal = findLast(
-        g.values,
-        v => v[field] != undefined
-      );
+      const lastVal = findLast(g.values, (v) => v[field] != undefined);
       g.sortVal = lastVal ? lastVal[field] : -1;
     }
   });
@@ -830,19 +750,14 @@ function renderGrid(data, options) {
     .enter()
     .append('g')
     .attr('class', 'row')
-    .attr(
-      'transform',
-      row => `translate(${yAxisWidth}, ${row * rowHeight})`
-    );
+    .attr('transform', (row) => `translate(${yAxisWidth}, ${row * rowHeight})`);
 
   // Add cells
   $rows.each(function (row) {
     const lastItemNumber = (row + 1) * numCols;
     const numColsForRow =
-      lastItemNumber > groups.length
-        ? groups.length % numCols
-        : numCols;
-    const range = d3range(numColsForRow).map(i => ({
+      lastItemNumber > groups.length ? groups.length % numCols : numCols;
+    const range = d3range(numColsForRow).map((i) => ({
       row,
       col: i,
     }));
@@ -852,14 +767,8 @@ function renderGrid(data, options) {
       .enter()
       .append('g')
       .attr('class', 'cell')
-      .classed(
-        'cell-clickable',
-        allowDrilldown && !isTestingData
-      )
-      .attr(
-        'transform',
-        d => `translate(${d.col * colWidth}, 0)`
-      );
+      .classed('cell-clickable', allowDrilldown && !isTestingData)
+      .attr('transform', (d) => `translate(${d.col * colWidth}, 0)`);
   });
 
   renderCharts(
@@ -894,17 +803,12 @@ function renderCharts($svg, data, options) {
   } = options;
   const { groups, extents } = data;
 
-  const yScaleType = filters.useLog
-    ? d3scaleLog
-    : d3scaleLinear;
+  const yScaleType = filters.useLog ? d3scaleLog : d3scaleLinear;
 
   const xScale = d3scaleBand()
     .domain(d3range(datesToShow.length))
     [daysToShow >= 90 ? 'range' : 'rangeRound']([0, chartWidth])
-    .paddingInner(
-      Math.floor((100 * (barPad * daysToShow)) / chartWidth) /
-        100
-    )
+    .paddingInner(Math.floor((100 * (barPad * daysToShow)) / chartWidth) / 100)
     .paddingOuter(0);
   const barWidth = xScale.bandwidth();
 
@@ -913,23 +817,16 @@ function renderCharts($svg, data, options) {
   });
 
   function makeYScale(extent) {
-    const domain = [
-      0,
-      Math.max(extent[1], filters.per100k ? 0.1 : 10),
-    ];
+    const domain = [0, Math.max(extent[1], filters.per100k ? 0.1 : 10)];
     if (filters.useLog) {
-      const extentMin =
-        Math.max(extent[0], 0) || (filters.per100k ? 0.01 : 1);
+      const extentMin = Math.max(extent[0], 0) || (filters.per100k ? 0.01 : 1);
       // Make sure domain start is small enough such that even really small numbers show a bar
       domain[0] = 1;
       while (domain[0] >= extentMin) {
         domain[0] /= 10;
       }
     }
-    return yScaleType()
-      .domain(domain)
-      .range([chartHeight, 0])
-      .nice();
+    return yScaleType().domain(domain).range([chartHeight, 0]).nice();
   }
 
   function makeAxis(scale) {
@@ -958,7 +855,7 @@ function renderCharts($svg, data, options) {
       .ticks(numTicks)
       .tickSizeInner(-chartWidth)
       .tickSizeOuter(0)
-      .tickFormat(d => {
+      .tickFormat((d) => {
         return formatYTick(d);
       });
   }
@@ -990,21 +887,18 @@ function renderCharts($svg, data, options) {
     let cellYScale = yScale;
     let cellYAxis = yAxis;
     if (!filters.consistentY) {
-      let extent = d3extent(values, d => d[field]);
+      let extent = d3extent(values, (d) => d[field]);
       // Account for moving average values in extent
       if (fieldHasMovingAverage[field]) {
         const maField = maKey(field);
-        const maExtent = d3extent(values, d => d[maField]);
+        const maExtent = d3extent(values, (d) => d[maField]);
         extent = d3extent(extent.concat(maExtent));
       }
       cellYScale = makeYScale(extent);
       cellYAxis = makeAxis(cellYScale);
     }
 
-    $cell
-      .append('g')
-      .attr('transform', 'translate(0,0)')
-      .call(cellYAxis);
+    $cell.append('g').attr('transform', 'translate(0,0)').call(cellYAxis);
 
     let stackFields;
     if (isTestingData) {
@@ -1022,7 +916,7 @@ function renderCharts($svg, data, options) {
     const stack = d3stack().keys(stackFields)(values);
     const $layers = $cell
       .selectAll('g.layer')
-      .data(stack, d => d.key)
+      .data(stack, (d) => d.key)
       .enter()
       .append('g')
       .attr('class', (d, i) => {
@@ -1032,23 +926,20 @@ function renderCharts($svg, data, options) {
     $layers
       .selectAll('.bar')
       .data(
-        l => l,
-        d => String(d.data.date.getTime())
+        (l) => l,
+        (d) => String(d.data.date.getTime())
       )
       .enter()
       .append('rect')
       .attr('class', 'bar')
       .attr('width', barWidth)
       .attr('x', (d, i) => xScale(i))
-      .attr('y', d => {
+      .attr('y', (d) => {
         const y = cellYScale(d[1]);
         return Number.isNaN(y) ? chartHeight : y;
       })
-      .attr('height', d => {
-        const y = Math.max(
-          chartHeight - cellYScale(d[1] - d[0]),
-          0
-        );
+      .attr('height', (d) => {
+        const y = Math.max(chartHeight - cellYScale(d[1] - d[0]), 0);
         return Number.isNaN(y) ? 0 : y;
       });
 
@@ -1056,7 +947,7 @@ function renderCharts($svg, data, options) {
       const xOffset = barWidth / 2;
       const line = d3line()
         .x((d, i) => Math.round(xScale(i) + xOffset))
-        .y(d => {
+        .y((d) => {
           const y = Math.min(
             Math.floor(cellYScale(d[maKey(field)])),
             chartHeight
@@ -1088,14 +979,11 @@ function renderCharts($svg, data, options) {
       const left = barXMidpoints[bisectIndex - 1];
       const right = barXMidpoints[bisectIndex];
       const index =
-        left == undefined ||
-        Math.abs(xPos - right) < Math.abs(xPos - left)
+        left == undefined || Math.abs(xPos - right) < Math.abs(xPos - left)
           ? bisectIndex
           : bisectIndex - 1;
       const date = datesToShow[index];
-      const value = values.find(
-        v => v.date.getTime() === date.getTime()
-      );
+      const value = values.find((v) => v.date.getTime() === date.getTime());
       if (value && (value !== tooltipValue || !tooltipShown)) {
         const chPos = Math.round(xScale(index) + barWidth / 2);
         $crosshair
@@ -1142,9 +1030,7 @@ function renderCharts($svg, data, options) {
     // Add label above other elements to make it clickable
     $cell
       .append('text')
-      .text(
-        groups.length > 1 ? `${counter}. ${data.key}` : data.key
-      )
+      .text(groups.length > 1 ? `${counter}. ${data.key}` : data.key)
       .attr('x', cellLabelX)
       .attr('y', cellLabelY)
       .attr('class', 'cell-label')
@@ -1194,16 +1080,8 @@ function showMapTooltip(options) {
 
 const _MS_PER_DAY = 1000 * 60 * 60 * 24;
 function dateDiffInDays(b, a) {
-  const utc1 = Date.UTC(
-    a.getFullYear(),
-    a.getMonth(),
-    a.getDate()
-  );
-  const utc2 = Date.UTC(
-    b.getFullYear(),
-    b.getMonth(),
-    b.getDate()
-  );
+  const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+  const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
   return Math.floor((utc2 - utc1) / _MS_PER_DAY);
 }
 
@@ -1242,8 +1120,7 @@ function showTooltip(options) {
   };
   const winWidth = window.innerWidth;
   const winHeight = window.innerHeight;
-  const bodyHeight = document.body.getBoundingClientRect()
-    .height;
+  const bodyHeight = document.body.getBoundingClientRect().height;
 
   const fitsLeft = pageX - 250 > 0;
   const fitsRight = pageX + 250 < winWidth;
@@ -1308,18 +1185,13 @@ function showTooltip(options) {
       { key: 'newDeaths' },
     ];
   } else {
-    dataPoints = [
-      'cases',
-      'deaths',
-      'newCases',
-      'newDeaths',
-    ].map(k => ({
+    dataPoints = ['cases', 'deaths', 'newCases', 'newDeaths'].map((k) => ({
       key: k,
       color: k === field ? 'primary1' : null,
     }));
   }
   if (filters.per100k) {
-    dataPoints = dataPoints.map(dp => ({
+    dataPoints = dataPoints.map((dp) => ({
       ...dp,
       key: per100kKey(dp.key),
       suffix: ' per 100k',
@@ -1331,7 +1203,7 @@ function showTooltip(options) {
       });
     }
   }
-  const dataPointEl = dataPoints.map(dp => {
+  const dataPointEl = dataPoints.map((dp) => {
     const format = dp.formatter || formatTooltipValue;
     const dpValue = value[dp.key];
     if (dpValue == undefined) {
@@ -1341,9 +1213,7 @@ function showTooltip(options) {
         	<div class="tooltip-dp-label ${dp.color || ''}">${
       fieldLabels[dp.key]
     }</div>
-        	<div class="tooltip-dp-val">${format(dpValue)}${
-      dp.suffix || ''
-    }</div>
+        	<div class="tooltip-dp-val">${format(dpValue)}${dp.suffix || ''}</div>
           ${
             hasPercents
               ? `
@@ -1377,10 +1247,7 @@ function showTooltip(options) {
 // Sometimes we want to delay hiding to allow user to click into tooltip before it hides (i.e. on mobile)
 function hideTooltipSoon() {
   // Long delay needed for iOS safari, otherwise tooltip hides
-  tooltipHideTimer = setTimeout(
-    hideTooltip,
-    isTouchDevice ? 500 : 50
-  );
+  tooltipHideTimer = setTimeout(hideTooltip, isTouchDevice ? 500 : 50);
 }
 function hideTooltip() {
   $('#tooltip').removeClass('shown');
@@ -1426,9 +1293,7 @@ function formatNumNice(n, precision) {
 const tooltipFmtPer100k = d3format(',.1f');
 const tooltipFmtPer100kSmall = d3format(',.2f');
 function formatPer100kValue(n) {
-  return n >= 1
-    ? tooltipFmtPer100k(n)
-    : tooltipFmtPer100kSmall(n);
+  return n >= 1 ? tooltipFmtPer100k(n) : tooltipFmtPer100kSmall(n);
 }
 
 const tooltipFmt = d3format(',d');
@@ -1531,10 +1396,8 @@ function renderAllStates() {
 function renderCounties(state) {
   const countiesForState = countyData[state];
 
-  const overviewData = stateData.filter(s => s.key === state);
-  const stateFips = overviewData
-    ? overviewData[0].values[0].fips
-    : null;
+  const overviewData = stateData.filter((s) => s.key === state);
+  const stateFips = overviewData ? overviewData[0].values[0].fips : null;
 
   render({
     groups: countiesForState.counties,
@@ -1556,18 +1419,10 @@ window.addEventListener('resize', resizeWindow);
 
 function fetchMapData() {
   if (!fetchMapData.promise) {
-    fetchMapData.promise = d3json(
-      'assets/us-counties.topojson'
-    ).then(us => {
-      stateFeatures = topojson.feature(us, us.objects.states)
-        .features;
-      stateBorders = topojson.mesh(
-        us,
-        us.objects.states,
-        (a, b) => a !== b
-      );
-      countyFeatures = topojson.feature(us, us.objects.counties)
-        .features;
+    fetchMapData.promise = d3json('assets/us-counties.topojson').then((us) => {
+      stateFeatures = topojson.feature(us, us.objects.states).features;
+      stateBorders = topojson.mesh(us, us.objects.states, (a, b) => a !== b);
+      countyFeatures = topojson.feature(us, us.objects.counties).features;
     });
   }
   return fetchMapData.promise;
@@ -1582,7 +1437,7 @@ function populateStateSelect(stateData) {
   const stateOptions = stateData
     .slice(0)
     .sort((a, b) => a.key.localeCompare(b.key))
-    .map(s => `<option value="${s.key}">${s.key}</option>`)
+    .map((s) => `<option value="${s.key}">${s.key}</option>`)
     .join('');
   $('#state-select').html(
     `<option value="all" selected>All States</option>${stateOptions}`
@@ -1595,7 +1450,7 @@ function populateStateSelect(stateData) {
 const fetchStatePopulationsMemo = memoizeOne(() => {
   return new Promise((resolve, reject) => {
     d3csv('assets/fips-pop-sta.csv')
-      .then(popCsv => {
+      .then((popCsv) => {
         const popMap = processPopulations(popCsv);
         resolve(popMap);
       })
@@ -1606,7 +1461,7 @@ const fetchStatePopulationsMemo = memoizeOne(() => {
 const fetchCountyPopulationsMemo = memoizeOne(() => {
   return new Promise((resolve, reject) => {
     d3csv('assets/fips-pop-cty.csv')
-      .then(popCsv => {
+      .then((popCsv) => {
         const popMap = processPopulations(popCsv);
         resolve(popMap);
       })
@@ -1614,7 +1469,7 @@ const fetchCountyPopulationsMemo = memoizeOne(() => {
   });
 });
 
-const fetchStateDataMemo = memoizeOne(timeFilter => {
+const fetchStateDataMemo = memoizeOne((timeFilter) => {
   return new Promise((resolve, reject) => {
     const file = timeFilter === 'all' ? 'all' : '90d';
     Promise.all([
@@ -1640,9 +1495,7 @@ const fetchCountyDataMemo = memoizeOne((state, timeFilter) => {
         const timeDir = timeFilter === 'all' ? 'all' : '90d';
         const fips = stateToFipsMap[state];
         if (!fips) {
-          reject(
-            new Error(`Could not find fips for state ${state}`)
-          );
+          reject(new Error(`Could not find fips for state ${state}`));
           return;
         }
 
@@ -1677,7 +1530,7 @@ export default function fetchAndRenderStates() {
       renderAllStates();
       completeLoading();
     })
-    .catch(error => {
+    .catch((error) => {
       console.error(error);
       completeLoading();
     });

@@ -40,13 +40,9 @@ class Router {
     for (let i = 0; i < keys.length; i++) {
       const k = keys[i];
       const qsKey = filterKeys[k];
-      let v =
-        qs[qsKey] != undefined ? qs[qsKey] : filterDefaults[k];
+      let v = qs[qsKey] != undefined ? qs[qsKey] : filterDefaults[k];
       // Coerce boolean filter values from string to boolean
-      if (
-        typeof filterDefaults[k] === 'boolean' &&
-        typeof v === 'string'
-      ) {
+      if (typeof filterDefaults[k] === 'boolean' && typeof v === 'string') {
         v = v === '1';
       }
       if (filters[k] === v && !firstParse) {
@@ -66,8 +62,7 @@ class Router {
             $('#field-select').val(v);
 
             isTestingData =
-              filters.field === 'tests' ||
-              filters.field === 'newTests';
+              filters.field === 'tests' || filters.field === 'newTests';
             if (isTestingData) {
               // Disable useLog if switching to testing data
               filters.useLog = false;
@@ -81,9 +76,7 @@ class Router {
               $('#filter-use-log-scale').show();
             }
             if (v === 'newCases' || v === 'newDeaths') {
-              $('.ma-legend .legend-field-label').text(
-                dataPointLabels[v]
-              );
+              $('.ma-legend .legend-field-label').text(dataPointLabels[v]);
               $('.ma-legend').show();
             } else {
               $('.ma-legend').hide();
@@ -146,15 +139,11 @@ function parseQs(qs) {
 }
 function stringifyQs(obj) {
   const result = Object.keys(obj)
-    .map(k => {
-      return `${encodeURIComponent(k)}=${encodeURIComponent(
-        obj[k]
-      )}`;
+    .map((k) => {
+      return `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`;
     })
     .join('&');
   return result ? `?${result}` : '';
 }
-export const router = new Router(
-  history.createBrowserHistory()
-);
+export const router = new Router(history.createBrowserHistory());
 router.parse(true);

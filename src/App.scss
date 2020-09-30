@@ -36,6 +36,45 @@
   }
 }
 
+.App {
+  /* font: 48px sans-serif; */
+  /* border: 5px solid green; */
+  /* background: blue; */
+  /* color: var(--primary2); */
+}
+
+.Covid {
+  /* font: 48px sans-serif; */
+  /* border: 5px solid green; */
+  /* background: blue; */
+  /* color: var(--primary2); */
+}
+
+.Header, .HeaderWrapper {
+    border: 10px solid hotpink;
+    padding: 10px;
+}
+
+.Legend, .LegendWrapper {
+    padding: 10px;
+    border: 10px solid lime;
+}
+
+.Viz, .VizWrapper {
+    padding: 10px;
+    border: 10px solid dodgerblue;
+}
+
+.VizTop {
+    padding: 10px;
+    border: 10px solid tomato;
+}
+
+.VizMap {
+    padding: 10px;
+    border: 10px solid maroon;
+}
+
 body {
   font: 12px sans-serif;
   margin: 0;
@@ -236,17 +275,20 @@ a:visited {
   background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='dimgrey'><polygon points='0,0 10,0 5,5'/></svg>")
     no-repeat scroll 93% 64% var(--neutral2);
   font-family: var(--font);
-}
-.select-css::-ms-expand {
-  display: none;
-}
-.select-css:hover {
+
+&:hover {
   background-color: var(--neutral3);
 }
-.select-css:focus {
+&:focus {
   box-shadow: 0 0 1px 3px var(--primary1);
   box-shadow: 0 0 0 3px -moz-mac-focusring;
   outline: none;
+}
+
+
+}
+.select-css::-ms-expand {
+  display: none;
 }
 .select-css option {
   font-weight: normal;
@@ -260,10 +302,10 @@ a:visited {
   position: relative;
   padding-top: 20px;
   transition: opacity 0.3s;
-  opacity: 1;
+  // opacity: 1;
 }
 .loading #viz {
-  opacity: 0.5;
+  // opacity: 0.5;
   pointer-events: none;
 }
 
@@ -531,7 +573,8 @@ body.touch #tooltip.shown {
 }
 
 .back-to-states {
-  opacity: 0;
+  /* opacity: 0; */
+  opacity: 50;
   pointer-events: none;
   cursor: pointer;
   color: var(--primary1);
@@ -605,13 +648,13 @@ body.touch #tooltip.shown {
 }
 
 .ma-legend {
-  display: none;
+  // display: none;
 }
 .testing-legend {
-  display: none;
+  // display: none;
 }
 .testing-data-unavailable {
-  display: none;
+  // display: none;
   margin: 20px;
   font-size: 18px;
 }

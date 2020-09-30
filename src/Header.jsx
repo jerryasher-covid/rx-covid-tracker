@@ -3,32 +3,32 @@ import virusIcon from './assets/virus-icon.svg';
 
 const Header = () => {
   return (
-    <div style={{border: "3x solid green", backgroundColor: "wheat"}}>
-      <div class='flex-row flex-center'>
+    <div className="HeaderWrapper"> 
+      <div className="flex-row flex-center">
         <div>
-          <a href='/' class='title-wrap'>
+          <a href="/" className="title-wrap">
             <img
               src={virusIcon}
-              title='virus by Nook Fulloption from the Noun Project'
-              class='virus-icon'
-              alt='icon of a virus by Nook Fulloption from the Noun Project'
+              title="virus by Nook Fulloption from the Noun Project"
+              className="virus-icon"
+              alt="icon of a virus by Nook Fulloption from the Noun Project"
             />
             <h1>US COVID-19 Tracker</h1>
           </a>
           <h3>
             Cases/Deaths data from{' '}
             <a
-              href='https://github.com/nytimes/covid-19-data'
-              target='_blank'
-              rel='noreferrer noopener'
+              href="https://github.com/nytimes/covid-19-data"
+              target="_blank"
+              rel="noreferrer noopener"
             >
               The New York Times
             </a>
             . Testing data from{' '}
             <a
-              href='https://covidtracking.com/about-tracker/'
+              href="https://covidtracking.com/about-tracker/"
               // eslint-disable-next-line react/jsx-no-target-blank
-              target='_blank'
+              target="_blank"
             >
               The COVID Tracking Project
             </a>
@@ -37,97 +37,77 @@ const Header = () => {
           <h4>
             Built by{' '}
             <a
-              href='https://twitter.com/dschnr'
-              rel='noreferrer noopener'
-              target='_blank'
+              href="https://twitter.com/dschnr"
+              rel="noreferrer noopener"
+              target="_blank"
             >
               @dschnr
             </a>
             . Source code available{' '}
-            <a href='https://github.com/schnerd/covid-tracker'>
-              on Github
-            </a>
-            .
+            <a href="https://github.com/schnerd/covid-tracker">on Github</a>.
           </h4>
         </div>
       </div>
-      <div class='filters'>
-        <div class='filter-item'>
-          <select id='state-select' class='select-css'>
-            <option value='all' selected='selected'>
+      <div className="filters">
+        <div className="filter-item">
+          <select id="state-select" className="select-css" defaultValue="all">
+            <option value="all">
               All States
             </option>
           </select>
         </div>
-        <div class='filter-item'>
-          <select id='field-select' class='select-css'>
-            <option value='newCases' selected='selected'>
+        <div className="filter-item">
+          <select id="field-select" className="select-css" defaultValue="newCases">
+            <option value="newCases">
               Daily New Cases
             </option>
-            <option value='newDeaths'>Daily New Deaths</option>
-            <option
-              class='field-select-test-option'
-              value='newTests'
-            >
+            <option value="newDeaths">Daily New Deaths</option>
+            <option className="field-select-test-option" value="newTests">
               Daily New Tests
             </option>
-            <option value='cases'>Total Announced Cases</option>
-            <option value='deaths'>
-              Total Announced Deaths
-            </option>
-            <option
-              class='field-select-test-option'
-              value='tests'
-            >
+            <option value="cases">Total Announced Cases</option>
+            <option value="deaths">Total Announced Deaths</option>
+            <option className="field-select-test-option" value="tests">
               Total Testing
             </option>
           </select>
         </div>
-        <div class='filter-item'>
-          <select id='time-select' class='select-css'>
-            <option value='7d' selected='selected'>
+        <div className="filter-item">
+          <select id="time-select" className="select-css" defaultValue="7d">
+            <option value="7d">
               Last 7 days
             </option>
-            <option value='14d' selected='selected'>
+            <option value="14d">
               Last 14 days
             </option>
-            <option value='1mo'>Last 30 days</option>
-            <option value='90d'>Last 90 days</option>
-            <option value='all'>All</option>
+            <option value="1mo">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+            <option value="all">All</option>
           </select>
         </div>
-        <div class='filter-item'>
-          <label class='cb-container'>
-            <input
-              type='checkbox'
-              class='cb-input'
-              id='cb-per-100k'
-            />{' '}
-            <span class='cb-mark'></span>{' '}
-            <span class='cb-label'>Per 100k People</span>
+        <div className="filter-item">
+          <label className="cb-container">
+            <input type="checkbox" className="cb-input" id="cb-per-100k" />{' '}
+            <span className="cb-mark"></span>{' '}
+            <span className="cb-label">Per 100k People</span>
           </label>
         </div>
-        <div class='filter-item' id='filter-use-log-scale'>
-          <label class='cb-container'>
-            <input
-              type='checkbox'
-              class='cb-input'
-              id='cb-use-log-scale'
-            />{' '}
-            <span class='cb-mark'></span>{' '}
-            <span class='cb-label'>Log Scale</span>
+        <div className="filter-item" id="filter-use-log-scale">
+          <label className="cb-container">
+            <input type="checkbox" className="cb-input" id="cb-use-log-scale" />{' '}
+            <span className="cb-mark"></span>{' '}
+            <span className="cb-label">Log Scale</span>
           </label>
         </div>
-        <div class='filter-item'>
-          <label class='cb-container'>
+        <div className="filter-item">
+          <label className="cb-container" defaultChecked="cb-consistent-y">
             <input
-              type='checkbox'
-              class='cb-input'
-              id='cb-consistent-y'
-              checked='checked'
+              type="checkbox"
+              className="cb-input"
+              id="cb-consistent-y"
             />{' '}
-            <span class='cb-mark'></span>{' '}
-            <span class='cb-label'>Consistent Y-Axis</span>
+            <span className="cb-mark"></span>{' '}
+            <span className="cb-label">Consistent Y-Axis</span>
           </label>
         </div>
       </div>

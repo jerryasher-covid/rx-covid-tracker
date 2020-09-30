@@ -1,17 +1,17 @@
 import React from 'react';
 import Header from './Header';
-/* import Legend from './Legend';
- * import Viz from './Viz';
- *  */
+import Legend from './Legend';
+import Viz from './Viz';
+
 const Covid = () => {
   return (
-    <div class='wrapper'>
+    <div className="wrapper">
       <Header />
-      {/* <div role='button' class='back-to-states'>
-          ← Back to states
-          </div>
-          <Legend />
-          <Viz /> */}
+      <div role="button" className="back-to-states">
+        ← Back to states
+      </div>
+      <Legend />
+      <Viz />
     </div>
   );
 };
