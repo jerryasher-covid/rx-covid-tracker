@@ -1,13 +1,14 @@
 import React from 'react';
+import virusIcon from './assets/virus-icon.svg';
 
 const Header = () => {
   return (
-    <div>
+    <div style={{border: "3x solid green", backgroundColor: "wheat"}}>
       <div class='flex-row flex-center'>
         <div>
           <a href='/' class='title-wrap'>
             <img
-              src='assets/virus-icon.svg'
+              src={virusIcon}
               title='virus by Nook Fulloption from the Noun Project'
               class='virus-icon'
               alt='icon of a virus by Nook Fulloption from the Noun Project'
