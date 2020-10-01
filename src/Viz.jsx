@@ -4,6 +4,9 @@ const Viz = () => {
   return (
     <div className="Viz">
       <div id="viz">
+        <div role="button" className="back-to-states">
+          ← All States
+        </div>
         <div id="viz-top" className="VizTop">
           <div id="viz-overview">
             <svg id="svg-overview" width="100" height="30">
@@ -26,7 +29,9 @@ const Viz = () => {
             <div id="map-no-data">No map data available</div>
           </div>
         </div>
-        <svg id="grid"></svg>
+        <div id="viz-grid" className="VizGrid">
+          <svg id="grid"></svg>
+        </div>
       </div>
       <div id="tooltip"></div>
       <div className="testing-data-unavailable">

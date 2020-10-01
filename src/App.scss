@@ -50,29 +50,42 @@
   /* color: var(--primary2); */
 }
 
-.Header, .HeaderWrapper {
-    border: 10px solid hotpink;
-    padding: 10px;
+.Header,
+.HeaderWrapper {
+  border: 10px solid hotpink;
+  padding: 10px;
 }
 
-.Legend, .LegendWrapper {
-    padding: 10px;
-    border: 10px solid lime;
+.Filters {
+  border: 10px solid fuchsia;
+  padding: 10px;
 }
 
-.Viz, .VizWrapper {
-    padding: 10px;
-    border: 10px solid dodgerblue;
+.Legend,
+.LegendWrapper {
+  padding: 10px;
+  border: 10px solid lime;
+}
+
+.Viz,
+.VizWrapper {
+  padding: 10px;
+  border: 10px solid dodgerblue;
 }
 
 .VizTop {
-    padding: 10px;
-    border: 10px solid tomato;
+  padding: 10px;
+  border: 10px dashed tomato;
 }
 
 .VizMap {
-    padding: 10px;
-    border: 10px solid maroon;
+  padding: 10px;
+  border: 10px dashed maroon;
+}
+
+.VizGrid {
+  padding: 10px;
+  border: 10px dashed gold;
 }
 
 body {
@@ -175,7 +188,6 @@ a:visited {
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
-
   }
   .filter-item {
     padding: 10px 20px 0 0;
@@ -276,16 +288,14 @@ a:visited {
     no-repeat scroll 93% 64% var(--neutral2);
   font-family: var(--font);
 
-&:hover {
-  background-color: var(--neutral3);
-}
-&:focus {
-  box-shadow: 0 0 1px 3px var(--primary1);
-  box-shadow: 0 0 0 3px -moz-mac-focusring;
-  outline: none;
-}
-
-
+  &:hover {
+    background-color: var(--neutral3);
+  }
+  &:focus {
+    box-shadow: 0 0 1px 3px var(--primary1);
+    box-shadow: 0 0 0 3px -moz-mac-focusring;
+    outline: none;
+  }
 }
 .select-css::-ms-expand {
   display: none;
@@ -424,6 +434,7 @@ a:visited {
 }
 
 #grid {
+  border: 5px solid black;
   margin-top: 45px;
 }
 
