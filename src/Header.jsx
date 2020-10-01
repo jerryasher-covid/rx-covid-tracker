@@ -3,7 +3,7 @@ import virusIcon from './assets/virus-icon.svg';
 
 const Header = () => {
   return (
-    <div className="HeaderWrapper wrapper">
+    <header>
       <div className="flex-row flex-center">
         <div>
           <a href="/" className="title-wrap">
@@ -48,7 +48,7 @@ const Header = () => {
           </h4>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 
