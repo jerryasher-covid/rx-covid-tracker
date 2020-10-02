@@ -583,9 +583,9 @@ body.touch #tooltip.shown {
 }
 
 .back-to-states {
-  /* opacity: 0; */
-  opacity: 50;
-  pointer-events: none;
+  // display: none;
+  // opacity: 0;
+  // pointer-events: none;
   cursor: pointer;
   color: var(--primary1);
   font-size: 16px;
