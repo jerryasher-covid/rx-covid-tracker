@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useCovidContext } from './CovidContext';
+import // json as d3json,
+// csv as d3csv,
+'d3-fetch';
 
 const AllStatesButton = () => {
   const { setState } = useCovidContext();
@@ -54,24 +57,44 @@ const ChartGrid = () => {
 };
 
 const Viz = () => {
-  const {
-    state,
-    setState,
-    tracker,
-    interval,
-    per100k,
-    logScale,
-    consistentYAxis,
-  } = useCovidContext();
+  const { loading, setLoading, state, timeFilter } = useCovidContext();
 
   // load count, state FIPS code
   // cache them
 
+  useEffect(() => {
+    const fetchStateData = () => {
+      //      const file = timeFilter === 'all' ? 'all' : '90d';
+      //      d3csv(
+      //        `https://raw.githubusercontent.com/schnerd/covid-tracker-data/master/data/state/${file}.csv`
+      //      );
+    };
+
+    setLoading(true);
+    fetchStateData();
+  }, [timeFilter, setLoading]);
+
   // load topomaps
   // cache them
 
+  /* useEffect(()=> {
+   *   setLoading((loading) => loading + 1)
+   *
+   * }, []);
+   */
+  const renderStates = () => {};
+
+  const renderCounties = (state) => {};
+
+  if (state === 'all_states') {
+    renderStates();
+  } else {
+    renderCounties(state);
+  }
+
   return (
     <div className="Viz">
+      {loading}
       <div id="viz">
         <AllStatesButton />
         <div id="viz-top" className="VizTop">

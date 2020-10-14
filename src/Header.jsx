@@ -1,5 +1,5 @@
 import React from 'react';
-import virusIcon from './assets/virus-icon.svg';
+import virusIcon from './images/virus-icon.svg';
 
 const Header = () => {
   return (

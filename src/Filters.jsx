@@ -11,12 +11,12 @@ const Filters = () => {
     setState,
     tracker,
     setTracker,
-    interval,
-    setInterval,
+    timeFilter,
+    setTimeFilter,
     per100k,
     setPer100k,
-    logScale,
-    setLogScale,
+    useLogScale,
+    setUseLogScale,
     consistentYAxis,
     setConsistentYAxis,
   } = useCovidContext();
@@ -45,9 +45,9 @@ const Filters = () => {
         <Select
           id="time-select"
           className="select-css"
-          defaultValue={interval}
-          onChange={(value) => setInterval(value)}
-          options={_CHOICES.INTERVAL}
+          defaultValue={timeFilter}
+          onChange={(value) => setTimeFilter(value)}
+          options={_CHOICES.timeFilter}
         />
       </div>
       <div className="filter-item">
@@ -63,8 +63,8 @@ const Filters = () => {
         <Checkbox
           id="cb-use-log-scale"
           className="cb-input"
-          checked={logScale}
-          onChange={(value) => setLogScale(!logScale)}
+          checked={useLogScale}
+          onChange={(value) => setUseLogScale(!useLogScale)}
           label={_CHOICES.LOG_SCALE.label}
         />{' '}
       </div>

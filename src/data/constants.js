@@ -69,7 +69,7 @@ export const _CHOICES = {
     { option: 'deaths', label: 'Total Announced Deaths' },
     { option: 'tests', label: 'Total Testing' },
   ],
-  INTERVAL: [
+  timeFilter: [
     { option: '7d', label: 'Last 7 days' },
     { option: '14d', label: 'Last 14 days' },
     { option: '1mo', label: 'Last 30 days' },
