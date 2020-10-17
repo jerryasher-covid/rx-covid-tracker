@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import {useInitialData} from './hooks.js'
+import { useMapAndPopsData } from './dataMapsAndPops.js';
 
 export const CovidContext = createContext();
 CovidContext.displayName = 'CovidState';
@@ -16,9 +16,11 @@ export function CovidContextProvider({ children }) {
   const [useLogScale, setUseLogScale] = useState(false);
   const [consistentYAxis, setConsistentYAxis] = useState(false);
 
-  const [{map, countyFips, stateFips}, setInitialState] = useInitialData(setLoading);
+  const [
+    { map, countyFips, stateFips, resetMapAndPopsFn },
+  ] = useMapAndPopsData(setLoading);
 
-  const store = {
+  const _Context = {
     loading,
     setLoading,
     state,
@@ -37,12 +39,12 @@ export function CovidContextProvider({ children }) {
     map,
     countyFips,
     stateFips,
-    setInitialState,
+    resetMapAndPopsFn,
     // githubStateDataAll
     // githubStateData90d,
   };
 
   return (
-    <CovidContext.Provider value={store}>{children}</CovidContext.Provider>
+    <CovidContext.Provider value={_Context}>{children}</CovidContext.Provider>
   );
 }
