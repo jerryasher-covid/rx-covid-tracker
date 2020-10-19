@@ -1,11 +1,15 @@
 import { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
+import { json as d3json, csv as d3csv } from 'd3-fetch';
 
 const initialMapsAndPops = {
   map: null,
   countyFips: null,
   stateFips: null,
   resetMapAndPopsFn: null,
+  d3map: null,
+  d3CountyFips: null,
+  d3StateFips: null,
 };
 
 // GET data from net
@@ -16,6 +20,9 @@ const getMapsAndPops = async (setLoading) => {
   const getCountyFipsPops = (county) => axios.get('assets/fips-pop-cty.csv');
   // d3csv('assets/fips-pop-sta.csv')
   const getStateFipsPops = (state) => axios.get('assets/fips-pop-sta.csv');
+  const d3Maps = () => d3json('assets/us-counties.topojson')
+  const d3CountyFipsPops = () => d3csv('assets/fips-pop-cty.csv')
+  const d3StateFipsPops = (state) => d3csv('assets/fips-pop-sta.csv')
 
   console.log('getMapsAndPops: start');
   setLoading(true);
@@ -23,6 +30,9 @@ const getMapsAndPops = async (setLoading) => {
     getMaps(),
     getCountyFipsPops(),
     getStateFipsPops(),
+    d3Maps(),
+    d3CountyFipsPops(),
+    d3StateFipsPops(),
   ]).catch((e) => {
     console.log(`Error fetching initial data: ${e}`);
     setLoading(false);
@@ -36,6 +46,9 @@ const getMapsAndPops = async (setLoading) => {
     map: results[0],
     countyFips: results[1],
     stateFips: results[2],
+    d3map: results[3],
+    d3CountyFips: results[4],
+    d3StateFips: results[5],
   };
   console.log('getMapsAndPops: returning', data);
   return data;
